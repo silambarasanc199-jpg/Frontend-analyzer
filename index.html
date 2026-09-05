@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Frontend Intelligence Analyzer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="background-effects">
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="grid-overlay"></div>
+</div>
+
+<header class="header">
+    <div class="header-inner">
+
+        <div class="brand">
+            <div class="brand-icon">⚡</div>
+
+            <div>
+                <div class="brand-text">Frontend Intelligence</div>
+                <div class="brand-subtitle">Project Analyzer</div>
+            </div>
+        </div>
+
+        <button id="themeToggle" class="theme-toggle">
+            🌙
+        </button>
+
+    </div>
+</header>
+
+
+<main>
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="status-badge">
+        <span class="status-dot"></span>
+        AI-Powered Frontend Intelligence
+    </div>
+
+    <h1>
+        Build the right
+        <span>frontend stack.</span>
+    </h1>
+
+    <p class="hero-description">
+        Describe your project and get intelligent recommendations
+        for technology, architecture, UI, theme, animation, AI,
+        3D and deployment.
+    </p>
+
+    <div class="hero-tags">
+        <span>Architecture</span>
+        <span>Technology</span>
+        <span>UI / UX</span>
+        <span>AI</span>
+        <span>3D / XR</span>
+    </div>
+
+</section>
+
+
+<!-- ANALYZER -->
+
+<section class="analyzer-section">
+
+    <div class="analyzer-card">
+
+        <div class="input-header">
+
+            <div>
+                <h2>Describe Your Project</h2>
+                <p>
+                    Tell us what you want to build.
+                </p>
+            </div>
+
+            <span class="input-badge">
+                SMART ANALYZER
+            </span>
+
+        </div>
+
+
+        <textarea
+            id="projectInput"
+            class="project-input"
+            placeholder="Example: Create a food delivery website with restaurant search, login, online payment, live order tracking, maps and reviews..."
+        ></textarea>
+
+
+        <div class="input-footer">
+
+            <div class="quick-examples">
+
+                <span>Try:</span>
+
+                <button
+                    class="example-btn"
+                    data-example="Create an online shopping website with product search, filters, shopping cart, checkout, payment, wishlist and user login."
+                >
+                    🛒 E-Commerce
+                </button>
+
+                <button
+                    class="example-btn"
+                    data-example="Create a personal developer portfolio with interactive 3D models, space background, scroll animations and cinematic effects."
+                >
+                    🌌 3D Portfolio
+                </button>
+
+                <button
+                    class="example-btn"
+                    data-example="Create a food delivery application with restaurant search, user login, online payment, live order tracking, maps and reviews."
+                >
+                    🍔 Food Delivery
+                </button>
+
+                <button
+                    class="example-btn"
+                    data-example="Create an AI assistant with chatbot, document analysis, voice interaction, streaming responses and personalized recommendations."
+                >
+                    🤖 AI Assistant
+                </button>
+
+            </div>
+
+
+            <button id="analyzeBtn" class="analyze-btn">
+                Analyze Project
+                <span>→</span>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- LOADING -->
+
+<section id="loadingSection" class="loading-section hidden">
+
+    <div class="loading-card">
+
+        <div class="loader"></div>
+
+        <h3 id="loadingText">
+            Understanding your project...
+        </h3>
+
+        <div class="progress-track">
+            <div id="loadingProgress" class="progress-bar"></div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- RESULTS -->
+
+<section id="resultsSection" class="results-section hidden">
+
+    <div class="results-header">
+
+        <div>
+            <span class="section-label">
+                ANALYSIS COMPLETE
+            </span>
+
+            <h2>Your Frontend Blueprint</h2>
+
+            <p>
+                Recommendations generated from your project requirements.
+            </p>
+        </div>
+
+        <div class="confidence-box">
+            <span>Confidence</span>
+            <strong id="confidenceScore">0%</strong>
+        </div>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+            <span>Project Type</span>
+            <strong id="projectType">—</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Complexity</span>
+            <strong id="projectComplexity">—</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Framework</span>
+            <strong id="primaryFramework">—</strong>
+        </div>
+
+        <div class="summary-card">
+            <span>Design Direction</span>
+            <strong id="designDirection">—</strong>
+        </div>
+
+    </div>
+
+
+    <!-- RECOMMENDATIONS -->
+
+    <div class="recommendation-grid">
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🏗️</div>
+
+            <div class="card-title">Architecture</div>
+
+            <div id="architectureResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🧩</div>
+
+            <div class="card-title">Pattern</div>
+
+            <div id="patternResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">⚙️</div>
+
+            <div class="card-title">Technology Stack</div>
+
+            <div id="technologyResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🎨</div>
+
+            <div class="card-title">Theme</div>
+
+            <div id="themeResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🖥️</div>
+
+            <div class="card-title">UI Style</div>
+
+            <div id="uiStyleResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">📐</div>
+
+            <div class="card-title">Layout</div>
+
+            <div id="layoutResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">✨</div>
+
+            <div class="card-title">Features</div>
+
+            <div id="featuresResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🎬</div>
+
+            <div class="card-title">Animation</div>
+
+            <div id="animationResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🧊</div>
+
+            <div class="card-title">3D</div>
+
+            <div id="threeDResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🥽</div>
+
+            <div class="card-title">XR / AR / VR</div>
+
+            <div id="xrResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card ai-card">
+
+            <div class="card-icon">🤖</div>
+
+            <div class="card-title">AI Integration</div>
+
+            <div id="aiResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🚀</div>
+
+            <div class="card-title">Performance</div>
+
+            <div id="performanceResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">♿</div>
+
+            <div class="card-title">Accessibility</div>
+
+            <div id="accessibilityResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🔎</div>
+
+            <div class="card-title">SEO</div>
+
+            <div id="seoResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🔐</div>
+
+            <div class="card-title">Security</div>
+
+            <div id="securityResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">🧪</div>
+
+            <div class="card-title">Testing</div>
+
+            <div id="testingResult" class="result-content"></div>
+
+        </article>
+
+
+        <article class="recommendation-card">
+
+            <div class="card-icon">☁️</div>
+
+            <div class="card-title">Deployment</div>
+
+            <div id="deploymentResult" class="result-content"></div>
+
+        </article>
+
+    </div>
+
+
+    <!-- WORKFLOW -->
+
+    <div class="blueprint-workflow">
+
+        <h3>Recommended Development Workflow</h3>
+
+        <div id="workflowResult" class="workflow-steps"></div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="result-actions">
+
+        <button id="newAnalysisBtn" class="secondary-btn">
+            ← New Analysis
+        </button>
+
+        <button id="copyResultBtn" class="secondary-btn">
+            📋 Copy Results
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- CAPABILITIES -->
+
+<section class="capabilities-section">
+
+    <div class="section-heading">
+
+        <span class="section-label">
+            INTELLIGENCE LAYERS
+        </span>
+
+        <h2>What the Analyzer Understands</h2>
+
+    </div>
+
+
+    <div class="capabilities-grid">
+
+        <div class="capability">
+            <span>🏗️</span>
+            <strong>Architecture</strong>
+            <p>SPA, SSR, SSG, ISR, PWA and scalable structures.</p>
+        </div>
+
+        <div class="capability">
+            <span>🎨</span>
+            <strong>Design Systems</strong>
+            <p>Themes, UI styles, layouts and visual direction.</p>
+        </div>
+
+        <div class="capability">
+            <span>✨</span>
+            <strong>Motion</strong>
+            <p>Micro-interactions, GSAP, scroll effects and cinematic motion.</p>
+        </div>
+
+        <div class="capability">
+            <span>🧊</span>
+            <strong>3D / XR</strong>
+            <p>Three.js, WebGL, WebGPU, AR, VR and immersive experiences.</p>
+        </div>
+
+        <div class="capability">
+            <span>🤖</span>
+            <strong>AI</strong>
+            <p>LLMs, chatbot, RAG, agents, voice and multimodal AI.</p>
+        </div>
+
+        <div class="capability">
+            <span>🚀</span>
+            <strong>Production</strong>
+            <p>Performance, SEO, accessibility, security and deployment.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<footer class="footer">
+
+    <div class="footer-inner">
+
+        <div>
+            <strong>Frontend Intelligence Analyzer</strong>
+            <p>Smart frontend technology recommendations.</p>
+        </div>
+
+        <span>V2 Smart Engine</span>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
