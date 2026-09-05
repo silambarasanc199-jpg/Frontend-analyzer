@@ -1,14 +1,15 @@
 "use strict";
 
-/* =====================================================
-   FRONTEND INTELLIGENCE ANALYZER
-   STEP 2 - SMART STACK RECOMMENDER
-   ===================================================== */
+
+// =====================================================
+// FRONTEND INTELLIGENCE ANALYZER
+// V2 SMART RECOMMENDATION ENGINE
+// =====================================================
 
 
-/* =====================================================
-   DOM
-   ===================================================== */
+// -----------------------------------------------------
+// DOM
+// -----------------------------------------------------
 
 const projectInput = document.getElementById("projectInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
@@ -22,11 +23,12 @@ const resultsSection = document.getElementById("resultsSection");
 const themeToggle = document.getElementById("themeToggle");
 
 
-/* =====================================================
-   HELPERS
-   ===================================================== */
+// -----------------------------------------------------
+// HELPERS
+// -----------------------------------------------------
 
 function normalize(text) {
+
     return String(text || "")
         .toLowerCase()
         .replace(/[^\w\s.-]/g, " ")
@@ -36,6 +38,7 @@ function normalize(text) {
 
 
 function hasAny(text, keywords) {
+
     const value = normalize(text);
 
     return keywords.some(keyword =>
@@ -45,6 +48,7 @@ function hasAny(text, keywords) {
 
 
 function unique(array) {
+
     return [...new Set(array)];
 }
 
@@ -56,16 +60,24 @@ function renderTags(items) {
     }
 
     return unique(items)
-        .map(item =>
-            `<span class="result-tag">${item}</span>`
-        )
+        .map(item => `<span class="result-tag">${item}</span>`)
         .join("");
 }
 
 
-/* =====================================================
-   PROJECT TYPE
-   ===================================================== */
+function renderText(items) {
+
+    if (!items || !items.length) {
+        return "Not specifically required.";
+    }
+
+    return items.join("<br>");
+}
+
+
+// =====================================================
+// PROJECT TYPE ENGINE
+// =====================================================
 
 const PROJECT_RULES = [
 
@@ -249,7 +261,6 @@ const PROJECT_RULES = [
             "publishing"
         ]
     }
-
 ];
 
 
@@ -268,12 +279,17 @@ function detectProjectType(text) {
 
         rule.keywords.forEach(keyword => {
 
-            if (value.includes(normalize(keyword))) {
+            const key = normalize(keyword);
 
-                score += keyword.includes(" ")
-                    ? 5
-                    : 2;
+            if (value.includes(key)) {
 
+                if (value === key) {
+                    score += 10;
+                } else {
+                    score += key.includes(" ")
+                        ? 5
+                        : 2;
+                }
             }
 
         });
@@ -293,9 +309,9 @@ function detectProjectType(text) {
 }
 
 
-/* =====================================================
-   FEATURES
-   ===================================================== */
+// =====================================================
+// FEATURE ENGINE
+// =====================================================
 
 const FEATURE_RULES = {
 
@@ -448,6 +464,32 @@ const FEATURE_RULES = {
         "management panel"
     ],
 
+    "Dark Mode": [
+        "dark mode",
+        "dark theme",
+        "theme switcher"
+    ],
+
+    "Multi-Language": [
+        "multi language",
+        "multilingual",
+        "multiple languages",
+        "language switcher",
+        "i18n"
+    ],
+
+    "Offline Support": [
+        "offline",
+        "offline support",
+        "works offline"
+    ],
+
+    PWA: [
+        "pwa",
+        "progressive web app",
+        "installable web app"
+    ],
+
     Animation: [
         "animation",
         "animated",
@@ -494,6 +536,7 @@ const FEATURE_RULES = {
     ],
 
     AI: [
+        "ai",
         "artificial intelligence",
         "machine learning",
         "llm",
@@ -539,20 +582,7 @@ const FEATURE_RULES = {
         "document ai",
         "summarize documents",
         "read documents"
-    ],
-
-    PWA: [
-        "pwa",
-        "progressive web app",
-        "installable web app"
-    ],
-
-    "Offline Support": [
-        "offline",
-        "offline support",
-        "works offline"
     ]
-
 };
 
 
@@ -560,29 +590,23 @@ function detectFeatures(text) {
 
     const features = [];
 
-    Object.entries(FEATURE_RULES).forEach(
-        ([feature, keywords]) => {
+    Object.entries(FEATURE_RULES).forEach(([feature, keywords]) => {
 
-            if (hasAny(text, keywords)) {
-                features.push(feature);
-            }
-
+        if (hasAny(text, keywords)) {
+            features.push(feature);
         }
-    );
+
+    });
 
     return features;
 }
 
 
-/* =====================================================
-   COMPLEXITY
-   ===================================================== */
+// =====================================================
+// COMPLEXITY
+// =====================================================
 
-function calculateComplexity(
-    text,
-    features,
-    projectType
-) {
+function calculateComplexity(text, features, projectType) {
 
     let score = features.length;
 
@@ -603,13 +627,10 @@ function calculateComplexity(
     }
 
     if (
-        [
-            "E-Commerce",
-            "Food Delivery",
-            "AI Application",
-            "3D / Immersive Experience",
-            "SaaS"
-        ].includes(projectType)
+        projectType === "E-Commerce" ||
+        projectType === "Food Delivery" ||
+        projectType === "AI Application" ||
+        projectType === "3D / Immersive Experience"
     ) {
         score += 2;
     }
@@ -630,65 +651,29 @@ function calculateComplexity(
 }
 
 
-/* =====================================================
-   STEP 2 - SMART FRAMEWORK ENGINE
-   ===================================================== */
+// =====================================================
+// FRAMEWORK
+// =====================================================
 
-function recommendFramework(
-    text,
-    projectType,
-    features,
-    complexity
-) {
-
-    /*
-       SIMPLE STATIC PROJECT
-    */
-
-    if (
-        projectType === "Portfolio" &&
-        complexity === "Beginner" &&
-        !features.includes("3D Experience") &&
-        !features.includes("AI")
-    ) {
-
-        return [
-            "HTML5",
-            "CSS3",
-            "JavaScript"
-        ];
-    }
-
-
-    /*
-       3D / IMMERSIVE
-    */
+function recommendFramework(text, projectType, features) {
 
     if (
         projectType === "3D / Immersive Experience" ||
-        features.includes("3D Experience")
+        hasAny(text, ["three.js", "webgl", "3d portfolio"])
     ) {
-
         return [
             "React",
             "Next.js",
-            "TypeScript",
             "React Three Fiber",
             "Three.js"
         ];
     }
-
-
-    /*
-       AI
-    */
 
     if (
         projectType === "AI Application" ||
         features.includes("AI") ||
         features.includes("AI Chatbot")
     ) {
-
         return [
             "React",
             "Next.js",
@@ -696,15 +681,11 @@ function recommendFramework(
         ];
     }
 
-
-    /*
-       E-COMMERCE
-    */
-
     if (
-        projectType === "E-Commerce"
+        projectType === "E-Commerce" ||
+        projectType === "Food Delivery" ||
+        projectType === "Booking"
     ) {
-
         return [
             "React",
             "Next.js",
@@ -712,31 +693,7 @@ function recommendFramework(
         ];
     }
 
-
-    /*
-       FOOD DELIVERY
-    */
-
-    if (
-        projectType === "Food Delivery"
-    ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       DASHBOARD
-    */
-
-    if (
-        projectType === "Dashboard"
-    ) {
-
+    if (projectType === "Dashboard") {
         return [
             "React",
             "TypeScript",
@@ -744,130 +701,15 @@ function recommendFramework(
         ];
     }
 
-
-    /*
-       SAAS
-    */
-
     if (
-        projectType === "SaaS"
+        projectType === "Portfolio" &&
+        hasAny(text, ["simple", "basic", "static"])
     ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       BOOKING
-    */
-
-    if (
-        projectType === "Booking"
-    ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       EDUCATION
-    */
-
-    if (
-        projectType === "Education / LMS"
-    ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       SOCIAL
-    */
-
-    if (
-        projectType === "Social / Community"
-    ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       FINANCE
-    */
-
-    if (
-        projectType === "Finance / FinTech"
-    ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       HEALTHCARE
-    */
-
-    if (
-        projectType === "Healthcare"
-    ) {
-
-        return [
-            "React",
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       BLOG
-    */
-
-    if (
-        projectType === "Blog / News"
-    ) {
-
-        return [
-            "Next.js",
-            "TypeScript"
-        ];
-    }
-
-
-    /*
-       DEFAULT
-    */
-
-    if (complexity === "Beginner") {
-
         return [
             "HTML5",
             "CSS3",
             "JavaScript"
         ];
-
     }
 
     return [
@@ -878,301 +720,305 @@ function recommendFramework(
 }
 
 
-/* =====================================================
-   CSS / UI LIBRARY
-   ===================================================== */
+// =====================================================
+// ARCHITECTURE
+// =====================================================
 
-function recommendCSS(
-    text,
-    projectType,
-    features
-) {
-
-    if (
-        hasAny(text, [
-            "simple",
-            "basic",
-            "html css javascript"
-        ]) &&
-        projectType === "Portfolio"
-    ) {
-        return [
-            "Custom CSS",
-            "CSS Variables",
-            "Responsive CSS"
-        ];
-    }
-
-
-    if (
-        projectType === "Dashboard"
-    ) {
-        return [
-            "Tailwind CSS",
-            "CSS Grid",
-            "Responsive Design"
-        ];
-    }
-
-
-    if (
-        projectType === "3D / Immersive Experience"
-    ) {
-        return [
-            "Tailwind CSS",
-            "Custom CSS",
-            "CSS Transforms"
-        ];
-    }
-
-
-    return [
-        "Tailwind CSS",
-        "CSS Variables",
-        "Responsive Design"
-    ];
-}
-
-
-/* =====================================================
-   STATE MANAGEMENT
-   ===================================================== */
-
-function recommendState(
-    text,
-    projectType,
-    features
-) {
-
-    if (
-        features.length <= 2
-    ) {
-        return [
-            "Local Component State"
-        ];
-    }
-
-
-    if (
-        projectType === "Dashboard"
-    ) {
-        return [
-            "Zustand",
-            "React State",
-            "Server State"
-        ];
-    }
-
-
-    if (
-        projectType === "E-Commerce"
-    ) {
-
-        return [
-            "Zustand",
-            "Server State",
-            "URL State"
-        ];
-    }
-
-
-    if (
-        features.includes("Real-Time Updates")
-    ) {
-
-        return [
-            "Zustand",
-            "Server State",
-            "Real-Time State"
-        ];
-    }
-
-
-    if (
-        projectType === "AI Application"
-    ) {
-
-        return [
-            "React State",
-            "Server State",
-            "Conversation State"
-        ];
-    }
-
-
-    return [
-        "React State",
-        "Server State"
-    ];
-}
-
-
-/* =====================================================
-   API / DATA
-   ===================================================== */
-
-function recommendAPI(
-    text,
-    projectType,
-    features
-) {
+function recommendArchitecture(text, projectType, features) {
 
     const result = [];
-
-
-    if (
-        features.includes("Search") ||
-        features.includes("Filters") ||
-        features.includes("Shopping Cart") ||
-        features.includes("User Profile") ||
-        features.includes("Authentication")
-    ) {
-
-        result.push(
-            "REST API",
-            "Fetch API"
-        );
-    }
-
-
-    if (
-        features.includes("Real-Time Updates") ||
-        features.includes("Chat / Messaging")
-    ) {
-
-        result.push(
-            "WebSocket",
-            "SSE"
-        );
-    }
-
-
-    if (
-        projectType === "AI Application" ||
-        features.includes("AI")
-    ) {
-
-        result.push(
-            "LLM API",
-            "Streaming API"
-        );
-    }
-
-
-    if (
-        features.includes("Maps / Location")
-    ) {
-
-        result.push(
-            "Maps API",
-            "Geolocation API"
-        );
-    }
-
-
-    if (
-        features.includes("Payment")
-    ) {
-
-        result.push(
-            "Payment Gateway API"
-        );
-    }
-
-
-    if (
-        projectType === "E-Commerce" ||
-        projectType === "SaaS"
-    ) {
-
-        result.push(
-            "Server Data Layer"
-        );
-    }
-
-
-    if (!result.length) {
-        result.push("No external API required");
-    }
-
-
-    return unique(result);
-}
-
-
-/* =====================================================
-   ARCHITECTURE
-   ===================================================== */
-
-function recommendArchitecture(
-    text,
-    projectType,
-    features
-) {
-
-    const result = [];
-
 
     if (
         projectType === "Portfolio" &&
         features.length <= 3
     ) {
-
-        result.push(
-            "Component Architecture",
-            "Static / SSG"
-        );
-
+        result.push("Component Architecture");
+        result.push("Static / SSG");
     }
 
     else if (
         projectType === "Blog / News"
     ) {
-
-        result.push(
-            "Component Architecture",
-            "SSG / ISR"
-        );
-
+        result.push("Component Architecture");
+        result.push("SSG / ISR");
     }
 
     else if (
-        projectType === "Dashboard"
+        projectType === "Dashboard" ||
+        projectType === "Admin Panel"
     ) {
+        result.push("SPA");
+        result.push("Component Architecture");
+        result.push("Feature-Based Architecture");
+    }
 
-        result.push(
-            "SPA",
-            "Component Architecture",
-            "Feature-Based Architecture"
-        );
-
+    else if (
+        projectType === "E-Commerce" ||
+        projectType === "Food Delivery" ||
+        projectType === "Booking"
+    ) {
+        result.push("Hybrid Rendering");
+        result.push("Component Architecture");
+        result.push("Feature-Based Architecture");
     }
 
     else if (
         projectType === "AI Application"
     ) {
-
-        result.push(
-            "Component Architecture",
-            "Feature-Based Architecture",
-            "Streaming UI"
-        );
-
-    }
-
-    else if (
-        projectType === "3D / Immersive Experience"
-    ) {
-
-        result.push(
-            "Component Architecture",
-            "Scene-Based Architecture"
-        );
-
+        result.push("Component Architecture");
+        result.push("Feature-Based Architecture");
+        result.push("Streaming UI");
     }
 
     else {
+        result.push("Component Architecture");
+        result.push("Feature-Based Architecture");
+    }
 
-        result.push(
-            "Component Architecture",
-            "
+    if (features.includes("Offline Support") || features.includes("PWA")) {
+        result.push("PWA Architecture");
+    }
+
+    return unique(result);
+}
+
+
+// =====================================================
+// PATTERN
+// =====================================================
+
+function recommendPattern(text, projectType, features) {
+
+    const patterns = [
+        "Component-Based"
+    ];
+
+    if (features.length >= 5) {
+        patterns.push("Feature-Based Architecture");
+    }
+
+    if (
+        features.includes("Authentication") ||
+        features.includes("Payment") ||
+        features.includes("Shopping Cart")
+    ) {
+        patterns.push("Unidirectional Data Flow");
+    }
+
+    if (
+        features.includes("Real-Time Updates")
+    ) {
+        patterns.push("Event-Driven UI");
+    }
+
+    if (
+        projectType === "E-Commerce" ||
+        projectType === "Food Delivery"
+    ) {
+        patterns.push("Repository Pattern");
+    }
+
+    if (
+        projectType === "Dashboard" ||
+        projectType === "SaaS"
+    ) {
+        patterns.push("Design System");
+    }
+
+    return unique(patterns);
+}
+
+
+// =====================================================
+// DESIGN
+// =====================================================
+
+function recommendDesign(text, projectType, features) {
+
+    if (projectType === "Finance / FinTech") {
+        return [
+            "Professional",
+            "Trust-Focused",
+            "Data-Centric"
+        ];
+    }
+
+    if (projectType === "Healthcare") {
+        return [
+            "Clean",
+            "Professional",
+            "Trust-Focused"
+        ];
+    }
+
+    if (projectType === "Food Delivery") {
+        return [
+            "Modern",
+            "Vibrant",
+            "Conversion-Focused"
+        ];
+    }
+
+    if (projectType === "E-Commerce") {
+        return [
+            "Modern",
+            "Premium",
+            "Conversion-Focused"
+        ];
+    }
+
+    if (projectType === "Portfolio") {
+        if (
+            features.includes("3D Experience") ||
+            hasAny(text, ["cinematic", "creative"])
+        ) {
+            return [
+                "Creative",
+                "Immersive",
+                "Cinematic"
+            ];
+        }
+
+        return [
+            "Minimal",
+            "Creative",
+            "Personal"
+        ];
+    }
+
+    if (
+        projectType === "AI Application"
+    ) {
+        return [
+            "Futuristic",
+            "AI-Native",
+            "Clean"
+        ];
+    }
+
+    if (
+        projectType === "3D / Immersive Experience"
+    ) {
+        return [
+            "Futuristic",
+            "Immersive",
+            "Cinematic"
+        ];
+    }
+
+    return [
+        "Modern",
+        "Clean",
+        "Professional"
+    ];
+}
+
+
+// =====================================================
+// THEME
+// =====================================================
+
+function recommendTheme(text, projectType, features) {
+
+    if (projectType === "Food Delivery") {
+        return [
+            "Food",
+            "Vibrant",
+            "Warm"
+        ];
+    }
+
+    if (projectType === "E-Commerce") {
+        return [
+            "Modern",
+            "Minimal",
+            "Light / Dark"
+        ];
+    }
+
+    if (projectType === "Portfolio") {
+
+        if (
+            features.includes("3D Experience") ||
+            hasAny(text, ["space", "galaxy"])
+        ) {
+            return [
+                "Space",
+                "Galaxy",
+                "Dark"
+            ];
+        }
+
+        return [
+            "Creative Portfolio",
+            "Minimal",
+            "Dark / Light"
+        ];
+    }
+
+    if (projectType === "AI Application") {
+        return [
+            "AI Future",
+            "Dark",
+            "Gradient"
+        ];
+    }
+
+    if (projectType === "3D / Immersive Experience") {
+        return [
+            "Sci-Fi",
+            "Space",
+            "Dark"
+        ];
+    }
+
+    if (projectType === "Finance / FinTech") {
+        return [
+            "Finance",
+            "Professional",
+            "Dark / Light"
+        ];
+    }
+
+    if (projectType === "Healthcare") {
+        return [
+            "Healthcare",
+            "Clean",
+            "Light"
+        ];
+    }
+
+    if (projectType === "Education / LMS") {
+        return [
+            "Education",
+            "Friendly",
+            "Modern"
+        ];
+    }
+
+    return [
+        "Modern",
+        "Minimal",
+        "Light / Dark"
+    ];
+}
+
+
+// =====================================================
+// UI STYLE
+// =====================================================
+
+function recommendUIStyle(text, projectType, features) {
+
+    if (
+        projectType === "3D / Immersive Experience"
+    ) {
+        return [
+            "3D Interactive",
+            "Glassmorphism",
+            "Cinematic"
+        ];
+    }
+
+    if (
+        projectType === "Portf
